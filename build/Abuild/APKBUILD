@@ -1,0 +1,40 @@
+pkgname=libpsl
+pkgver=0.21.5
+pkgrel=1
+pkgdesc="C library for the Publix Suffix List"
+url="https://rockdaboot.github.io/libpsl"
+arch="all"
+license="MIT"
+depends="libunistring libidn2 libiconv qnx-io-sock"
+depends_dev="$pkgname-utils=$pkgver-r$pkgrel libunistring-dev libidn2-dev libiconv-dev libidn2-dev libiconv-dev qnx-io-sock-dev"
+makedepends="$depends_dev meson ninja publicsuffix-list"
+subpackages="$pkgname-static $pkgname-utils $pkgname-dev $pkgname-doc"
+source="https://github.com/rockdaboot/libpsl/releases/download/$pkgver/libpsl-$pkgver.tar.gz"
+
+build() {
+    ./configure \
+        --prefix=/usr \
+	--disable-dependency-tracking \
+	--disable-man \
+	--enable-builtin=libidn2 \
+	--enable-runtime=libidn2 \
+	--with-psl-file=/usr/share/publicsuffix/effective_tld_names.dat \
+	--with-psl-testfile=/usr/share/publicsuffix/test_psl.txt
+    make
+
+}
+
+package() {
+    make DESTDIR="$pkgdir" install
+}
+
+
+utils() {
+	pkgdesc="$pkgdesc (utils)"
+
+	amove usr/bin
+}
+
+sha512sums="
+c14d575cecc0f1693894dd79565b6b9220084ddfa43b908a1cefe16d147cdd5ec47796eb0c2135e2f829a951abaf39d8a371ab5c1352f57b36e610e25adf91f5  libpsl-0.21.5.tar.gz
+"
